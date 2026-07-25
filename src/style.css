@@ -7,6 +7,107 @@ body {
   background: #ffffff;
 }
 
+#snackbar-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 200;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+
+    pointer-events: none;
+}
+
+.snackbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    max-width: 320px;
+    padding: 14px 18px;
+
+    border-radius: 14px;
+
+    background: rgba(30, 30, 30, 0.85);
+    backdrop-filter: blur(16px);
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+
+    font-family: "Unbounded", sans-serif;
+    font-size: 0.8rem;
+    color: white;
+
+    pointer-events: auto;
+
+    animation: snackbarIn 0.3s ease forwards;
+}
+
+.snackbar.leaving {
+    animation: snackbarOut 0.3s ease forwards;
+}
+
+.snackbar.success {
+    border-left: 4px solid #4ade80;
+}
+
+.snackbar.error {
+    border-left: 4px solid #f87171;
+}
+
+.snackbar-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    font-size: 0.75rem;
+    font-weight: 900;
+}
+
+.snackbar.success .snackbar-icon {
+    background: rgba(74, 222, 128, 0.2);
+    color: #4ade80;
+}
+
+.snackbar.error .snackbar-icon {
+    background: rgba(248, 113, 113, 0.2);
+    color: #f87171;
+}
+
+.snackbar-message {
+    line-height: 1.4;
+}
+
+@keyframes snackbarIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes snackbarOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+}
+
 #app {
   position: relative;
   display:flex;
@@ -66,6 +167,188 @@ body {
 
   font-size: 1rem;
   color: white;
+}
+
+#mini-clock {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 150;
+
+    font-family: "Unbounded", sans-serif;
+    text-align: left;
+
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#mini-clock.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#mini-clock p#mini-time {
+    margin: 0;
+    padding: 0;
+
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: #ffffff;
+}
+
+#mini-clock p#mini-date {
+    margin: 2px 0 0;
+    padding: 0;
+
+    font-weight: 400;
+    font-size: 0.7rem;
+    color: #ffffff;
+}
+
+#weather-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px);
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity 0.3s ease;
+}
+
+#weather-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#weather-widget {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 260;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 80px;
+    overflow: hidden;
+
+    padding: 10px 16px;
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px);
+
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+
+    font-family: "Unbounded", sans-serif;
+    color: white;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease, box-shadow 0.2s ease,
+                padding 0.3s ease, border-radius 0.3s ease, width 0.3s ease;
+}
+
+#weather-widget:hover {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+}
+
+#weather-widget.expanded {
+    width: 260px;
+    padding: 20px;
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(30px);
+
+    cursor: default;
+}
+
+#weather-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 0.9rem;
+}
+
+#weather-icon {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+#weather-temp {
+    line-height: 1;
+}
+
+#weather-details {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.35s ease;
+}
+
+#weather-widget.expanded #weather-details {
+    max-height: 320px;
+    opacity: 1;
+    margin-top: 16px;
+}
+
+#weather-place {
+    margin: 0 0 14px;
+
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+    text-align: left;
+}
+
+#weather-forecast {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.forecast-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+
+    flex: 1;
+    font-size: 0.75rem;
+}
+
+.forecast-day .day-name {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.forecast-day .day-icon {
+    font-size: 1.1rem;
+}
+
+.forecast-day .day-temp {
+    font-weight: 400;
+    font-size: 0.7rem;
+}
+
+.forecast-day .day-temp .max {
+    color: white;
+}
+
+.forecast-day .day-temp .min {
+    color: rgba(255, 255, 255, 0.55);
+    margin-left: 3px;
 }
 
 #search-bar {
@@ -299,7 +582,7 @@ body {
 
 #info-button:hover {
     background:rgba(255,255,255,.35);
-    transform:translateY(-3px);
+    /* transform:translateY(-3px); */
 }
 
 #info-arrow {
@@ -326,7 +609,7 @@ body {
     color: #111;
 
     opacity: 0;
-    /* transform: translateY(24px); */
+    transform: translateY(24px);
     transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
@@ -365,4 +648,52 @@ body {
     font-family: sans-serif;
     font-size: 0.85rem;
     color: #888;
+}
+
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+
+  background: #111;
+
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+#loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#loading-spinner {
+  width: 40px;
+  height: 40px;
+
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: white;
+  border-radius: 50%;
+
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+}
+
+#loading-text {
+  margin: 0;
+
+  font-family: "Unbounded", sans-serif;
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
 }
