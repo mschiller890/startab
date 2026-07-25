@@ -15,12 +15,120 @@ body {
 }
 
 #clock {
+  text-align: center;
   font-family: "Unbounded", sans-serif;
   font-optical-sizing: auto;
   font-weight: 900;
   font-style: normal;
+}
+
+#clock > p#time {
+  margin: 0;
+  padding: 0;
 
   font-size: 5rem;
   color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+#clock > p#date {
+  margin: 0;
+  padding: 0;
+
+  font-size: 1rem;
+  color: white;
+}
+
+#search-bar {
+    position: relative;
+    display: inline-block;
+    margin: 20px;
+    margin-bottom: 70px;
+}
+
+#search-input {
+    font-family: "Unbounded", sans-serif;
+    width: 60vh;
+    height: 50px;
+    padding: 15px 15px 15px 48px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    margin: 0;
+    box-sizing: border-box;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#search-input:hover {
+    background: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+#search-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.32);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3),
+                0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+#search-logo {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#shortcuts {
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+
+.shortcut {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+    padding: 10px;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.2);
+
+    transition: transform 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.shortcut:hover {
+    transform: translateY(-4px) scale(1.05);
+    background: rgba(255, 255, 255, 0.28);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.shortcut:active {
+    transform: translateY(-2px) scale(0.98);
+}
+.shortcut > img {
+  margin-bottom: 20px;
+  width: 50px;
+  height: 50px;
+}
+
+.shortcut > p {
+  font-family: "Unbounded", sans-serif;
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+  color: white;
+  font-size: 0.8rem;
+  text-align: center;
 }
