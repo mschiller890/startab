@@ -1,17 +1,47 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  margin: 0; 
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  min-height: 100vh;
+  margin: 0;
+  background: #ffffff;
 }
 
 #app {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  position: relative;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow: hidden;
+
+  background-color: #111;
+}
+
+#app::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+
+  background-image: inherit;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  filter: blur(0px);
+  transform: scale(1);
+  transition: filter 0.6s ease, transform 0.6s ease;
+}
+
+#app.blurred::before {
+  filter: blur(25px);
+  transform: scale(1.1);
+}
+
+#app > * {
+  position: relative;
+  z-index: 1;
 }
 
 #clock {
@@ -131,4 +161,208 @@ body {
   color: white;
   font-size: 0.8rem;
   text-align: center;
+}
+
+#modal-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0,0,0,0.35);
+    backdrop-filter: blur(10px);
+
+    z-index: 100;
+}
+
+#modal {
+    width: 350px;
+    padding: 30px;
+
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(25px);
+
+    box-shadow: 0 20px 50px rgba(0,0,0,.3);
+
+    font-family: "Unbounded", sans-serif;
+    color: white;
+
+    animation: modalShow .25s ease;
+}
+
+
+@keyframes modalShow {
+    from {
+        transform: scale(.8);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+#modal h2 {
+    margin-top: 0;
+    text-align: center;
+}
+
+
+#modal input {
+    width: 100%;
+    box-sizing: border-box;
+
+    margin-top: 15px;
+    padding: 12px;
+
+    border: none;
+    outline: none;
+
+    border-radius: 12px;
+
+    background: rgba(255,255,255,.2);
+    color:white;
+
+    font-family: "Unbounded", sans-serif;
+}
+
+
+#modal input::placeholder {
+    color: rgba(255,255,255,.7);
+}
+
+
+#modal-buttons {
+    display:flex;
+    gap:10px;
+    margin-top:25px;
+}
+
+
+#modal button {
+    flex:1;
+
+    padding:12px;
+
+    border:none;
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-family:"Unbounded", sans-serif;
+
+    background:rgba(255,255,255,.2);
+    color:white;
+
+    transition:.2s;
+}
+
+
+#modal button:hover {
+    background:rgba(255,255,255,.35);
+    transform:translateY(-2px);
+}
+
+#info-button {
+    position: absolute;
+    bottom: 25px;
+    left: 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 12px 20px;
+
+    border: none;
+    border-radius: 15px;
+
+    background: rgba(255,255,255,.2);
+    backdrop-filter: blur(20px);
+
+    color:white;
+
+    cursor:pointer;
+
+    font-family:"Unbounded", sans-serif;
+    font-size: 0.85rem;
+
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+
+#info-button:hover {
+    background:rgba(255,255,255,.35);
+    transform:translateY(-3px);
+}
+
+#info-arrow {
+    transition: transform 0.3s ease;
+}
+
+#info-section {
+    /* min-height: 100vh; */
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    display: flex;
+    justify-content: center;
+
+    padding: 100px 24px 120px;
+}
+
+#image-info {
+    width: 100%;
+    max-width: 640px;
+    height: fit-content;
+
+    color: #111;
+
+    opacity: 0;
+    /* transform: translateY(24px); */
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+#image-info.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#image-info h2 {
+    margin: 0 0 8px;
+
+    font-family: "Unbounded", sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    color: #111;
+}
+
+#image-info #info-date {
+    margin: 0 0 32px;
+
+    font-family: "Unbounded", sans-serif;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+#image-info #info-description {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: #222;
+}
+
+#image-info #info-copyright {
+    margin-top: 32px;
+
+    font-family: sans-serif;
+    font-size: 0.85rem;
+    color: #888;
 }

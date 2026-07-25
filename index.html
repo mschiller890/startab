@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <div id="app">
+    <section id="app">
       <div id="clock">
         <p id="time">00:00</p>
         <p id="date">Thursday, January 1, 1970</p>
@@ -36,10 +36,37 @@
 
       </div>
 
-      <div id="more-info">
+      <button id="info-button">
+        <span id="info-button-label">More info</span>
+        <svg id="info-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 9l6 6 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </section>
 
+    <section id="info-section">
+      <div id="image-info">
+          <h2 id="info-title"></h2>
+          <p id="info-date"></p>
+          <p id="info-description"></p>
+          <p id="info-copyright"></p>
       </div>
-    </div>
+    </section>
+
+      <div id="modal-overlay">
+        <div id="modal">
+            <h2 id="modal-title">Add Shortcut</h2>
+
+            <input id="modal-input-1" placeholder="Website URL">
+            <input id="modal-input-2" placeholder="Shortcut name">
+
+            <div id="modal-buttons">
+                <button id="modal-cancel">Cancel</button>
+                <button id="modal-confirm">Confirm</button>
+            </div>
+        </div>
+      </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

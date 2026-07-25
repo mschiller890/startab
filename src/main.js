@@ -1,7 +1,47 @@
 const API_KEY = import.meta.env.VITE_NASA_API_KEY;
 
-fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`).then(response => response.json()).then(data => {
-  document.body.style.backgroundImage = `url(${data.url})`;
+let nasaData;
+
+const heroEl = document.getElementById("app");
+
+fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`)
+.then(response => response.json())
+.then(data => {
+
+    nasaData = data;
+
+    heroEl.style.backgroundImage = `url(${data.url})`;
+
+    if (nasaData) {
+        document.getElementById("info-title").textContent =
+            nasaData.title;
+
+        document.getElementById("info-date").textContent =
+            nasaData.date;
+
+        document.getElementById("info-description").textContent =
+            nasaData.explanation;
+
+        document.getElementById("info-copyright").textContent =
+            nasaData.copyright
+            ? `© ${nasaData.copyright}`
+            : "";
+    } else {
+        document.getElementById("info-title").textContent = "Loading...";
+        document.getElementById("info-date").textContent = "";
+        document.getElementById("info-description").textContent = "";
+        document.getElementById("info-copyright").textContent = "";
+    }
+
+    if (window.scrollY > window.innerHeight / 2) {
+        document.getElementById("info-title").textContent = data.title;
+        document.getElementById("info-date").textContent = data.date;
+        document.getElementById("info-description").textContent = data.explanation;
+        document.getElementById("info-copyright").textContent = data.copyright
+            ? `© ${data.copyright}`
+            : "";
+    }
+
 });
 
 function setTime() {
@@ -54,22 +94,26 @@ function renderShortcuts() {
         div.oncontextmenu = (e) => {
             e.preventDefault();
 
-            if (confirm(`Delete "${shortcut.name}"?`)) {
-                shortcuts = shortcuts.filter(s => s !== shortcut);
-                saveShortcuts();
-                renderShortcuts();
-            }
+            openModal(
+              "Delete Shortcut",
+              null,
+              null,
+              () => {
+                  shortcuts = shortcuts.filter(s => s !== shortcut);
+                  saveShortcuts();
+                  renderShortcuts();
+              }
+          );
         };
 
         shortcutsContainer.appendChild(div);
     });
 
-    // Add button
     const add = document.createElement("div");
     add.className = "shortcut";
     add.innerHTML = `
         <div style="font-size:40px;">+</div>
-        <p>Add shortcut</p>
+        <p>Add</p>
     `;
 
     add.onclick = addShortcut;
@@ -77,23 +121,115 @@ function renderShortcuts() {
     shortcutsContainer.appendChild(add);
 }
 
-async function addShortcut() {
-    const url = prompt("Website URL");
+const modalOverlay = document.getElementById("modal-overlay");
+const modalInput1 = document.getElementById("modal-input-1");
+const modalInput2 = document.getElementById("modal-input-2");
 
-    if (!url) return;
+const modalConfirm = document.getElementById("modal-confirm");
+const modalCancel = document.getElementById("modal-cancel");
 
-    const name = prompt("Shortcut name") || new URL(url).hostname;
+let modalCallback = null;
 
-    const hostname = new URL(url).hostname;
 
-    shortcuts.push({
-        name,
-        url,
-        icon: `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`
-    });
+function openModal(title, input1, input2, callback) {
 
-    saveShortcuts();
-    renderShortcuts();
+    document.getElementById("modal-title").textContent = title;
+
+    modalInput1.value = "";
+    modalInput2.value = "";
+
+    modalInput1.style.display = input1 ? "block" : "none";
+    modalInput2.style.display = input2 ? "block" : "none";
+
+    if (input1) {
+        modalInput1.placeholder = input1;
+    }
+
+    if (input2) {
+        modalInput2.placeholder = input2;
+    }
+
+    modalOverlay.style.display = "flex";
+
+    modalCallback = callback;
+}
+
+function closeModal() {
+    modalOverlay.style.display = "none";
+    modalCallback = null;
+}
+
+
+modalCancel.onclick = closeModal;
+
+
+modalConfirm.onclick = () => {
+
+    if(modalCallback) {
+        modalCallback(
+            modalInput1.value,
+            modalInput2.value
+        );
+    }
+
+    closeModal();
+};
+
+function addShortcut() {
+
+    openModal(
+        "Add Shortcut",
+        "Website URL",
+        "Shortcut name",
+        (url,name)=>{
+
+            if(!url) return;
+
+            if(!name)
+                name = new URL(url).hostname;
+
+
+            const hostname = new URL(url).hostname;
+
+
+            shortcuts.push({
+                name,
+                url,
+                icon:`https://www.google.com/s2/favicons?sz=64&domain=${hostname}`
+            });
+
+
+            saveShortcuts();
+            renderShortcuts();
+        }
+    );
 }
 
 renderShortcuts();
+
+const infoSection = document.getElementById("info-section");
+const infoButton = document.getElementById("info-button");
+const infoArrow = document.getElementById("info-arrow");
+const infoButtonLabel = document.getElementById("info-button-label");
+const imageInfo = document.getElementById("image-info");
+
+function isScrolledToInfo() {
+    return window.scrollY > window.innerHeight / 2;
+}
+
+infoButton.onclick = () => {
+
+    window.scrollTo({
+        top: isScrolledToInfo() ? 0 : infoSection.offsetTop,
+        behavior: "smooth"
+    });
+};
+
+window.addEventListener("scroll", () => {
+    const scrolledDown = isScrolledToInfo();
+
+    infoButtonLabel.textContent = scrolledDown ? "Back to top" : "More info";
+    infoArrow.style.transform = scrolledDown ? "rotate(180deg)" : "rotate(0deg)";
+    heroEl.classList.toggle("blurred", scrolledDown);
+    imageInfo.classList.toggle("visible", scrolledDown);
+});
