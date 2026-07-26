@@ -58,7 +58,7 @@ global number and hoping it applies everywhere. It didn't.
 ## running it
 
 ```bash
-git clone https://github.com/yourusername/startab.git
+git clone https://github.com/mschiller890/startab.git
 cd startab
 npm install
 ```
