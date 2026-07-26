@@ -14,7 +14,7 @@ fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`)
 .then(data => {
 
     nasaData = data;
-
+    analyzeBrightness(data.url);
 
     const img = new Image();
     img.onload = () => {
@@ -405,6 +405,17 @@ function isScrolledToInfo() {
     return window.scrollY > window.innerHeight / 2;
 }
 
+function isOverWhite(el) {
+    const elRect = el.getBoundingClientRect();
+    const sectionRect = infoSection.getBoundingClientRect();
+    // true once the white section's top edge has risen above this element's position
+    return sectionRect.top <= elRect.bottom;
+}
+
+function isOverWhiteSection() {
+    return window.scrollY >= infoSection.offsetTop;
+}
+
 infoButton.onclick = () => {
 
     if (nasaData) {
@@ -442,4 +453,57 @@ window.addEventListener("scroll", () => {
     heroEl.classList.toggle("blurred", scrolledDown);
     imageInfo.classList.toggle("visible", scrolledDown);
     miniClock.classList.toggle("visible", scrolledDown);
+
+    const miniTimeEl = document.getElementById("mini-time");
+    const miniDateEl = document.getElementById("mini-date");
+    const weatherTempEl = document.getElementById("weather-temp");
+
+    const miniClockOverWhite = isOverWhite(miniClock);
+    const weatherOverWhite = isOverWhite(weatherWidget);
+    const buttonOverWhite = isOverWhite(infoButton);
+
+    miniTimeEl.style.color = miniClockOverWhite ? "#111111" : "#ffffff";
+    miniDateEl.style.color = miniClockOverWhite ? "rgba(17, 17, 17, 0.65)" : "rgba(255, 255, 255, 0.7)";
+
+    weatherTempEl.style.color = weatherOverWhite ? "#111111" : "#ffffff";
+
+    infoButtonLabel.style.color = buttonOverWhite ? "#111111" : "#ffffff";
+    infoArrow.querySelector("path").setAttribute("stroke", buttonOverWhite ? "#111111" : "#ffffff");
 });
+
+function analyzeBrightness(url) {
+    const probeImg = new Image();
+    probeImg.crossOrigin = "anonymous"; 
+
+    probeImg.onload = () => {
+        try {
+            const size = 20; 
+            const canvas = document.createElement("canvas");
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(probeImg, 0, 0, size, size);
+
+            const { data } = ctx.getImageData(0, 0, size, size);
+            let total = 0;
+            for (let i = 0; i < data.length; i += 4) {
+                total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+            }
+            const avgLuminance = total / (data.length / 4);
+
+            const root = document.documentElement.style;
+            if (avgLuminance > 150) {
+                root.setProperty("--clock-fg", "#111111");
+                root.setProperty("--clock-fg-secondary", "rgba(17, 17, 17, 0.7)");
+            } else {
+                root.setProperty("--clock-fg", "#ffffff");
+                root.setProperty("--clock-fg-secondary", "rgba(255, 255, 255, 0.7)");
+            }
+        } catch (e) {
+
+        }
+    };
+
+    probeImg.onerror = () => {};
+    probeImg.src = url;
+}
