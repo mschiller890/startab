@@ -232,16 +232,21 @@ function renderShortcuts() {
         div.oncontextmenu = (e) => {
             e.preventDefault();
 
+            div.oncontextmenu = (e) => {
+            e.preventDefault();
+
             openModal(
-              "Delete Shortcut",
-              null,
-              null,
-              () => {
-                  shortcuts = shortcuts.filter(s => s !== shortcut);
-                  saveShortcuts();
-                  renderShortcuts();
-              }
-          );
+                  "Delete Shortcut",
+                  null,
+                  null,
+                  null,
+                  () => {
+                      shortcuts = shortcuts.filter(s => s !== shortcut);
+                      saveShortcuts();
+                      renderShortcuts();
+                  }
+              );
+            };
         };
 
         shortcutsContainer.appendChild(div);
@@ -262,6 +267,7 @@ function renderShortcuts() {
 const modalOverlay = document.getElementById("modal-overlay");
 const modalInput1 = document.getElementById("modal-input-1");
 const modalInput2 = document.getElementById("modal-input-2");
+const modalInput3 = document.getElementById("modal-input-3");
 
 const modalConfirm = document.getElementById("modal-confirm");
 const modalCancel = document.getElementById("modal-cancel");
@@ -269,15 +275,17 @@ const modalCancel = document.getElementById("modal-cancel");
 let modalCallback = null;
 
 
-function openModal(title, input1, input2, callback) {
+function openModal(title, input1, input2, input3, callback) {
 
     document.getElementById("modal-title").textContent = title;
 
     modalInput1.value = "";
     modalInput2.value = "";
+    modalInput3.value = "";
 
     modalInput1.style.display = input1 ? "block" : "none";
     modalInput2.style.display = input2 ? "block" : "none";
+    modalInput3.style.display = input3 ? "block" : "none";
 
     if (input1) {
         modalInput1.placeholder = input1;
@@ -285,6 +293,10 @@ function openModal(title, input1, input2, callback) {
 
     if (input2) {
         modalInput2.placeholder = input2;
+    }
+
+    if (input3) {
+        modalInput3.placeholder = input3;
     }
 
     modalOverlay.style.display = "flex";
@@ -306,7 +318,8 @@ modalConfirm.onclick = () => {
     if(modalCallback) {
         const shouldClose = modalCallback(
             modalInput1.value,
-            modalInput2.value
+            modalInput2.value,
+            modalInput3.value
         );
 
         if (shouldClose !== false) {
@@ -323,7 +336,8 @@ function addShortcut() {
         "Add Shortcut",
         "Website URL",
         "Shortcut name",
-        (url, name) => {
+        "Custom icon URL (optional)",
+        (url, name, iconUrl) => {
 
             if (!url) {
                 showSnackbar("Please enter a website URL", "error");
@@ -342,10 +356,21 @@ function addShortcut() {
                 name = hostname;
             }
 
+            let icon = `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`;
+
+            if (iconUrl) {
+                try {
+                    new URL(iconUrl);
+                    icon = iconUrl;
+                } catch {
+                    showSnackbar("Custom icon URL was invalid, using default favicon", "error");
+                }
+            }
+
             shortcuts.push({
                 name,
                 url,
-                icon: `https://www.google.com/s2/favicons?sz=64&domain=${hostname}`
+                icon
             });
 
             saveShortcuts();
