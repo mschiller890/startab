@@ -731,6 +731,20 @@ body {
     color: #222;
 }
 
+#image-info #info-description a {
+    color: #111;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: rgba(17, 17, 17, 0.35);
+    text-underline-offset: 2px;
+
+    transition: text-decoration-color 0.2s ease;
+}
+
+#image-info #info-description a:hover {
+    text-decoration-color: rgba(17, 17, 17, 0.8);
+}
+
 #image-info #info-copyright {
     margin-top: 32px;
 
@@ -785,4 +799,32 @@ body {
   font-weight: 400;
   font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.7);
+}
+
+#hero-video,
+#hero-embed {
+    position: absolute;
+    inset: -20px;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+
+    object-fit: cover;
+    pointer-events: none;
+
+    filter: blur(0px);
+    transform: scale(1);
+    transition: filter 0.6s ease, transform 0.6s ease;
+
+    display: none;
+}
+
+#app.blurred #hero-video,
+#app.blurred #hero-embed {
+    filter: blur(25px);
+    transform: scale(1.1);
+}
+
+#app > #hero-video,
+#app > #hero-embed {
+    z-index: 0;
 }

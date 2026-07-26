@@ -8,31 +8,103 @@ const loadingScreen = document.getElementById("loading-screen");
 function hideLoadingScreen() {
   loadingScreen.classList.add("hidden");
 }
+function cleanExplanation(html) {
+    if (!html) return "";
 
-fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`)
+    let cleaned = html;
+
+    cleaned = cleaned.replace(/<p>\s*Explore the Universe:[\s\S]*?<\/p>\s*/gi, "");
+
+    cleaned = cleaned.replace(/Explore the Universe:[\s\S]*$/gi, "");
+
+    return cleaned.trim();
+}
+
+const heroVideoEl = document.getElementById("hero-video");
+const heroEmbedEl = document.getElementById("hero-embed");
+
+function toEmbedUrl(url) {
+    try {
+        const u = new URL(url);
+
+        if (u.hostname.includes("youtube.com") || u.hostname.includes("youtu.be")) {
+            let videoId = u.searchParams.get("v");
+            if (!videoId && u.hostname.includes("youtu.be")) {
+                videoId = u.pathname.slice(1);
+            }
+            if (!videoId && u.pathname.includes("/embed/")) {
+                videoId = u.pathname.split("/embed/")[1];
+            }
+            if (videoId) {
+                return `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&modestbranding=1`;
+            }
+        }
+
+        if (u.hostname.includes("vimeo.com")) {
+            const videoId = u.pathname.split("/").filter(Boolean).pop();
+            if (videoId) {
+                return `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1&loop=1&background=1`;
+            }
+        }
+    } catch (e) {
+    }
+
+    return url;
+}
+
+function showVideoBackground(data) {
+    if (data.thumbnail_url) {
+        analyzeBrightness(data.thumbnail_url);
+    } else {
+        const root = document.documentElement.style;
+        root.setProperty("--clock-fg", "#ffffff");
+        root.setProperty("--clock-fg-secondary", "rgba(255, 255, 255, 0.7)");
+    }
+
+    heroVideoEl.src = data.url;
+    heroVideoEl.style.display = "block";
+
+    heroVideoEl.oncanplay = () => {
+        heroVideoEl.play().catch(() => {});
+        hideLoadingScreen();
+    };
+
+    heroVideoEl.onerror = () => {
+        heroVideoEl.style.display = "none";
+        heroEmbedEl.src = toEmbedUrl(data.url);
+        heroEmbedEl.style.display = "block";
+
+        heroEmbedEl.onload = hideLoadingScreen;
+        setTimeout(hideLoadingScreen, 2500); 
+    };
+}
+
+fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&thumbs=true`)
 .then(response => response.json())
 .then(data => {
 
     nasaData = data;
-    analyzeBrightness(data.url);
 
-    const img = new Image();
-    img.onload = () => {
-        heroEl.style.backgroundImage = `url(${data.url})`;
-        hideLoadingScreen();
-    };
-    img.onerror = hideLoadingScreen;
-    img.src = data.url;
+    if (data.media_type === "video") {
+        showVideoBackground(data);
+    } else {
+        analyzeBrightness(data.url);
 
+        const img = new Image();
+        img.onload = () => {
+            heroEl.style.backgroundImage = `url(${data.url})`;
+            hideLoadingScreen();
+        };
+        img.onerror = hideLoadingScreen;
+        img.src = data.url;
+    }
 
-    // if (window.scrollY > window.innerHeight / 2) {
-        document.getElementById("info-title").textContent = data.title;
-        document.getElementById("info-date").textContent = data.date;
-        document.getElementById("info-description").textContent = data.explanation;
-        document.getElementById("info-copyright").textContent = data.copyright
-            ? `© ${data.copyright}`
-            : "";
-    // }
+    document.getElementById("info-title").textContent = data.title;
+    document.getElementById("info-date").textContent = data.date;
+    document.getElementById("info-description").innerHTML = cleanExplanation(data.explanation); // <-- was textContent
+    document.getElementById("info-copyright").textContent = data.copyright
+        ? `© ${data.copyright}`
+        : "";
 
 })
 .catch(hideLoadingScreen);
@@ -433,8 +505,8 @@ infoButton.onclick = () => {
         document.getElementById("info-date").textContent =
             nasaData.date;
 
-        document.getElementById("info-description").textContent =
-            nasaData.explanation;
+        document.getElementById("info-description").innerHTML = 
+            cleanExplanation(nasaData.explanation); 
 
         document.getElementById("info-copyright").textContent =
             nasaData.copyright
