@@ -299,13 +299,21 @@ function openModal(title, input1, input2, input3, callback) {
         modalInput3.placeholder = input3;
     }
 
-    modalOverlay.style.display = "flex";
+    modalOverlay.classList.add("visible"); 
 
     modalCallback = callback;
 }
 
+const modalEl = document.getElementById("modal");
+
 function closeModal() {
-    modalOverlay.style.display = "none";
+    modalEl.classList.add("closing");
+    modalOverlay.classList.remove("visible");
+
+    modalEl.addEventListener("animationend", () => {
+        modalEl.classList.remove("closing");
+    }, { once: true });
+
     modalCallback = null;
 }
 
@@ -465,7 +473,7 @@ window.addEventListener("scroll", () => {
     miniTimeEl.style.color = miniClockOverWhite ? "#111111" : "#ffffff";
     miniDateEl.style.color = miniClockOverWhite ? "rgba(17, 17, 17, 0.65)" : "rgba(255, 255, 255, 0.7)";
 
-    weatherTempEl.style.color = weatherOverWhite ? "#111111" : "#ffffff";
+    weatherWidget.classList.toggle("on-white", weatherOverWhite);
 
     infoButtonLabel.style.color = buttonOverWhite ? "#111111" : "#ffffff";
     infoArrow.querySelector("path").setAttribute("stroke", buttonOverWhite ? "#111111" : "#ffffff");
